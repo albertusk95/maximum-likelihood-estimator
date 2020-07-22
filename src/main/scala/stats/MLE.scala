@@ -1,8 +1,8 @@
 package stats
 
 import org.apache.spark.sql.SparkSession
-import stats.configs.{ConfigUtils, DistributionEvalConfig}
-import stats.distributions.DistributionEvaluation
+import stats.configs.{ConfigUtils, MLEConfig}
+import stats.mle.EstimateParams
 import stats.sources.SourceFactory
 
 import scala.util.Try
@@ -19,39 +19,27 @@ object MLE {
       .zip(configs)
       .toStream
       .map {
-        case (config_path: String, config: DistributionEvalConfig) =>
+        case (config_path: String, config: MLEConfig) =>
           processOne(config_path, config)
       }
       .toList
   }
 
-  private def processOne(config_path: String, config: DistributionEvalConfig): Unit = {
-    val originDf =
-      SourceFactory.of(config.source.format, config.source.pathToOriginSample).get.readData()
-    val currentDf =
-      SourceFactory.of(config.source.format, config.source.pathToCurrentSample).get.readData()
+  private def processOne(config_path: String, config: MLEConfig): Unit = {
+    val df = SourceFactory.of(config.source.format, config.source.path).get.readData()
 
-    if (
-      Util.areColumnsAvailable(originDf, currentDf, config.comparedCol)
-      && Util.areNumericTypeColumns(originDf, currentDf, config.comparedCol)
-    ) {
-      val evalStatus =
-        DistributionEvaluation.evaluate(
-          originDf,
-          currentDf,
-          config.evalMethod,
-          config.comparedCol,
-          config.options)
+    if (Util.hasInputCol(df, config.column) && Util.numericInputCol(df, config.column)) {
+      val estimateResults =
+        EstimateParams.estimate(df.select(config.column), config.column, config.fittedDistribution)
 
-      SparkSession.builder.getOrCreate.createDataFrame(Seq(evalStatus)).show()
+      SparkSession.builder.getOrCreate.createDataFrame(Seq(estimateResults)).show(truncate = false)
     }
     else {
-      throw new Error(
-        "One or more columns to compare doesn't exist in the data OR columns are not numeric types")
+      throw new Error("The column doesn't exist in the data OR the column is not numerical type")
     }
   }
 
-  private def readConfig(file: String): Try[DistributionEvalConfig] =
+  private def readConfig(file: String): Try[MLEConfig] =
     Try(ConfigUtils.loadConfig(file)).recover {
       case e => throw new Error(s"Error parsing file: $file", e)
     }
