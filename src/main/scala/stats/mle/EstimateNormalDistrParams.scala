@@ -18,6 +18,6 @@ object EstimateNormalDistrParams extends EstimateDistrParams {
           2)) / totalObservations)
     val mleStdDev = computeMLE(df, mleStdDevAggFunc)
 
-    s"MLE => mean: ${mleMean}, stdDev: ${mleStdDev}"
+    s"mean: ${mleMean}, stdDev: ${mleStdDev}"
   }
 }
