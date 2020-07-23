@@ -2,21 +2,19 @@
 
 A collection of maximum likelihood estimators for the fitted distribution parameters given a set of observations.
 
-## Assumptions
+## Assumption
 
-* The observations were collected in independent and identically distributed (i.i.d) manner
+The observations were collected in independent and identically distributed (i.i.d) manner
 
-The above assumption simplifies the generation of likelihood function
+This assumption simplifies the generation of likelihood function
 
 Given a set of observations (i.i.d), the likelihood of the distribution parameters is calculated as the following.
 
-```
-L(params | x1, x2, x3, ..., xn) = P(x1, x2, x3, ..., xn | params)
+<b>L(params | x1, x2, x3, ..., xn) = P(x1, x2, x3, ..., xn | params)</b>
 
 Since the observations are independent and identically distributed, we get the following.
 
-L(params | x1, x2, x3, ..., xn) = P(x1 | params) . P(x2 | params) . P(x3 | params) ... P(xn | params)
-```
+<b>L(params | x1, x2, x3, ..., xn) = P(x1 | params) . P(x2 | params) . P(x3 | params) ... P(xn | params)</b>
 
 ## Quickstart
 
