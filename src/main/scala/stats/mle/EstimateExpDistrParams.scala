@@ -16,7 +16,7 @@ object EstimateExpDistrParams extends EstimateDistrParams {
   override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {
     param match {
       case DistributionParamConstants.RATE =>
-        val totalObservations = additionalElements.head
+        val totalObservations = additionalElements.get.head
         F.lit(totalObservations) / F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN)
     }
   }
