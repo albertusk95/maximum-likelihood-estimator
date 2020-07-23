@@ -63,7 +63,11 @@ A set of distribution MLEs
 
 ### fitted_distribution
 
-The distribution whose parameters' MLE will be estimated by fitting it to the observations.
+The distribution whose parameters' MLE will be calculated by fitting it to the observations.
+
+Currently supports:
+* normal distribution: `normal`
+* exponential distribution: `exp`
 
 ### column
 
