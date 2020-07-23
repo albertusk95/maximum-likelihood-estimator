@@ -10,6 +10,10 @@ object DistributionGeneralConstants {
 }
 
 object DistributionParamConstants {
+  // normal
   val MEAN = "mean"
   val STD_DEV = "std_dev"
+
+  // exponential
+  val RATE = "rate"
 }
