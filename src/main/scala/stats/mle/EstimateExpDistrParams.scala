@@ -10,7 +10,7 @@ object EstimateExpDistrParams extends EstimateDistrParams {
     val mleRate =
       computeMLE(df, getAggFunc(DistributionParamConstants.RATE, Some(Seq(totalObservations))))
 
-    s"rate: ${mleRate}"
+    buildMLEResultsMessage(Seq(mleRate))
   }
 
   override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {
@@ -19,5 +19,11 @@ object EstimateExpDistrParams extends EstimateDistrParams {
         val totalObservations = additionalElements.get.head
         F.lit(totalObservations) / F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN)
     }
+  }
+
+  override def buildMLEResultsMessage(paramMLEs: Seq[Double]): String = {
+    val mleRate = paramMLEs.head
+
+    s"rate: ${mleRate}"
   }
 }

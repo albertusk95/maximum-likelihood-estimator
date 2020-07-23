@@ -13,7 +13,7 @@ object EstimateNormalDistrParams extends EstimateDistrParams {
       df,
       getAggFunc(DistributionParamConstants.STD_DEV, Some(Seq(totalObservations, mleMean))))
 
-    s"mean: ${mleMean}, stdDev: ${mleStdDev}"
+    buildMLEResultsMessage(Seq(mleMean, mleStdDev))
   }
 
   override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {
@@ -30,5 +30,13 @@ object EstimateNormalDistrParams extends EstimateDistrParams {
               F.col(DistributionGeneralConstants.MLE_TARGET_COLUMN) - F.lit(mleMean),
               2)) / totalObservations)
     }
+  }
+
+  override def buildMLEResultsMessage(paramMLEs: Seq[Double]): String = {
+    val mleMean = paramMLEs.head
+    val mleStdDev = paramMLEs(1)
+
+    s"mean: ${mleMean}\n" +
+      s"stdDev: ${mleStdDev}"
   }
 }

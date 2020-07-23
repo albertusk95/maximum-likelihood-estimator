@@ -7,6 +7,8 @@ abstract class EstimateDistrParams {
 
   def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column
 
+  def buildMLEResultsMessage(paramMLEs: Seq[Double]): String
+
   def computeMLE(df: DataFrame, aggFunc: Column): Double =
     df.agg(aggFunc).head.get(0).asInstanceOf[Double]
 }
