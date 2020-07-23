@@ -138,3 +138,7 @@ To find the MLE for x, the task becomes to solving for L' / (L ln(10)) = 0.
 
 It simply states that L' = 0 since the denominator can't be zero.
 ```
+
+## Author
+
+Albertus Kelvin, 2020
