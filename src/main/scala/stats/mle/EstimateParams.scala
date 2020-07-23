@@ -15,14 +15,15 @@ object EstimateParams {
     columnName: String,
     fittedDistribution: String,
     sourcePath: String): MLEStatus = {
-    val filteredOutNullsDf = filterOutNulls(df, columnName)
-    val standardizedColNamedf = standardizeColName(filteredOutNullsDf, columnName)
-
     if (MLEUtils.hasInputCol(df, columnName) && MLEUtils.numericInputCol(df, columnName)) {
+      val standardizedColNamedf = standardizeColName(df, columnName)
+      val filteredOutNullsDf = filterOutNulls(standardizedColNamedf)
+
       val paramMLEs = fittedDistribution match {
         case DistributionConstants.NORMAL =>
-          EstimateNormalDistrParams.estimate(standardizedColNamedf)
-        case DistributionConstants.EXP => EstimateExpDistrParams.estimate(standardizedColNamedf)
+          EstimateNormalDistrParams.runEstimator(filteredOutNullsDf)
+        case DistributionConstants.EXP =>
+          EstimateExpDistrParams.runEstimator(filteredOutNullsDf)
       }
 
       MLEStatus(columnName, fittedDistribution, paramMLEs, sourcePath)
@@ -32,11 +33,11 @@ object EstimateParams {
     }
   }
 
-  private def filterOutNulls(df: DataFrame, columnName: String): DataFrame =
-    df.filter(!F.isnull(F.col(columnName)))
-
   private def standardizeColName(df: DataFrame, columnName: String): DataFrame =
     df.withColumnRenamed(columnName, DistributionGeneralConstants.MLE_TARGET_COLUMN)
+
+  private def filterOutNulls(df: DataFrame): DataFrame =
+    df.filter(!F.isnull(F.col(DistributionGeneralConstants.MLE_TARGET_COLUMN)))
 
   private def roundValues(df: DataFrame, rounding: Int): DataFrame = {
     df.withColumn(

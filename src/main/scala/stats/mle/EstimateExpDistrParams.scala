@@ -4,7 +4,7 @@ import org.apache.spark.sql.{Column, DataFrame, functions => F}
 import stats.constants.{DistributionGeneralConstants, DistributionParamConstants}
 
 object EstimateExpDistrParams extends EstimateDistrParams {
-  def estimate(df: DataFrame): String = {
+  override def estimate(df: DataFrame): String = {
     val totalObservations = df.count()
 
     val mleRate =
@@ -12,6 +12,9 @@ object EstimateExpDistrParams extends EstimateDistrParams {
 
     buildMLEResultsMessage(Seq(mleRate))
   }
+
+  override def filterOutNonSupportedObservations(df: DataFrame): DataFrame =
+    df.filter(F.col(DistributionGeneralConstants.MLE_TARGET_COLUMN) >= F.lit(0))
 
   override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {
     param match {
