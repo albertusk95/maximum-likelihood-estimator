@@ -1,6 +1,6 @@
-# Maximum Likelihood Estimation
+# Maximum Likelihood Estimation (EMELY)
 
-A collection of maximum likelihood estimators for the fitted distribution parameters given a set of observations.
+<b>EMELY</b> is a collection of maximum likelihood estimators for the fitted distribution parameters given a set of observations.
 
 ## Assumption
 
@@ -18,7 +18,7 @@ Since the observations are independent and identically distributed, we get the f
 
 ## Quickstart
 
-* Download the latest code version from the releases tab
+* Download the latest version of <b>EMELY</b> from the releases tab
 * Create the configuration file. See the <a href="https://github.com/albertusk95/maximum-likelihood-estimator/blob/master/src/main/resources/exampleConfig.json">example</a>
 * Run with `java -cp [path_to_application_jar] stats.MLE [path_to_config_file]`
 
