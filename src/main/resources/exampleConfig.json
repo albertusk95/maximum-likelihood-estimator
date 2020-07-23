@@ -1,8 +1,20 @@
 {
-  "fitted_distribution": "normal",
-  "column": "",
-  "source": {
-    "format": "csv",
-    "path": ""
-  }
+  "max_likelihood_estimates": [
+    {
+      "fitted_distribution": "normal",
+      "column": "",
+      "source": {
+        "format": "csv",
+        "path": ""
+      }
+    },
+    {
+      "fitted_distribution": "exp",
+      "column": "",
+      "source": {
+        "format": "csv",
+        "path": ""
+      }
+    }
+  ]
 }
