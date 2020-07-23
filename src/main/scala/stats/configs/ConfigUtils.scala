@@ -17,9 +17,9 @@ object ConfigUtils {
     content
   }
 
-  def loadConfig(configPath: String): MLEConfigs = {
+  def loadConfig(configPath: String): MLEConfig = {
     val distributionEvalConfig = readFromFile(configPath)
-    val decodingResult = decode[MLEConfigs](distributionEvalConfig)
+    val decodingResult = decode[MLEConfig](distributionEvalConfig)
 
     decodingResult match {
       case Right(config) => config
