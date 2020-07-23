@@ -1,8 +1,8 @@
 package stats
 
 import org.apache.spark.sql.SparkSession
-import stats.configs.{ConfigUtils, MLEConfig}
-import stats.mle.EstimateParams
+import stats.configs.{ConfigUtils, MLEConfigs}
+import stats.mle.{EstimateParams, MLEStatus}
 import stats.sources.SourceFactory
 
 import scala.util.Try
@@ -19,27 +19,33 @@ object MLE {
       .zip(configs)
       .toStream
       .map {
-        case (config_path: String, config: MLEConfig) =>
-          processOne(config_path, config)
+        case (_, config: MLEConfigs) =>
+          processOne(config)
       }
       .toList
   }
 
-  private def processOne(config_path: String, config: MLEConfig): Unit = {
-    val df = SourceFactory.of(config.source.format, config.source.path).get.readData()
+  private def processOne(config: MLEConfigs): Unit = {
+    config.maxLikelihoodEstimates match {
+      case Some(mles) =>
+        val mleStatuses: Seq[MLEStatus] = mles.map { distrMLEs =>
+          val df = SourceFactory.of(distrMLEs.source.format, distrMLEs.source.path).get.readData()
 
-    if (Util.hasInputCol(df, config.column) && Util.numericInputCol(df, config.column)) {
-      val estimateResults =
-        EstimateParams.estimate(df.select(config.column), config.column, config.fittedDistribution)
+          EstimateParams.estimate(
+            df.select(distrMLEs.column),
+            distrMLEs.column,
+            distrMLEs.fittedDistribution,
+            distrMLEs.source.path)
+        }
 
-      SparkSession.builder.getOrCreate.createDataFrame(Seq(estimateResults)).show(truncate = false)
-    }
-    else {
-      throw new Error("The column doesn't exist in the data OR the column is not numerical type")
+        SparkSession.builder.getOrCreate
+          .createDataFrame(mleStatuses)
+          .show(truncate = false)
+      case None =>
     }
   }
 
-  private def readConfig(file: String): Try[MLEConfig] =
+  private def readConfig(file: String): Try[MLEConfigs] =
     Try(ConfigUtils.loadConfig(file)).recover {
       case e => throw new Error(s"Error parsing file: $file", e)
     }
