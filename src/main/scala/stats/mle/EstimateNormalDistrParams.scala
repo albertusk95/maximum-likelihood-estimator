@@ -36,7 +36,6 @@ object EstimateNormalDistrParams extends EstimateDistrParams {
     val mleMean = paramMLEs.head
     val mleStdDev = paramMLEs(1)
 
-    s"mean: ${mleMean}\n" +
-      s"stdDev: ${mleStdDev}"
+    s"mean: ${mleMean}, stdDev: ${mleStdDev}"
   }
 }
