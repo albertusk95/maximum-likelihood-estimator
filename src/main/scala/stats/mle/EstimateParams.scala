@@ -12,6 +12,7 @@ object EstimateParams {
 
     val paramMLEs = fittedDistribution match {
       case DistributionConstants.NORMAL => EstimateNormalDistrParams.estimate(standardizedColNamedf)
+      case DistributionConstants.EXP    => EstimateExpDistrParams.estimate(standardizedColNamedf)
     }
 
     MLEStatus(fittedDistribution, paramMLEs)
