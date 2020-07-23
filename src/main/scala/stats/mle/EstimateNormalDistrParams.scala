@@ -16,14 +16,14 @@ object EstimateNormalDistrParams extends EstimateDistrParams {
     s"mean: ${mleMean}, stdDev: ${mleStdDev}"
   }
 
-  private def getAggFunc(param: String, optionalElements: Seq[Any]): Column = {
+  override def getAggFunc(param: String, additionalElements: Seq[Any]): Column = {
     param match {
       case DistributionParamConstants.MEAN =>
-        val totalObservations = optionalElements.head
+        val totalObservations = additionalElements.head
         F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN) / totalObservations
       case DistributionParamConstants.STD_DEV =>
-        val totalObservations = optionalElements.head
-        val mleMean = optionalElements(1)
+        val totalObservations = additionalElements.head
+        val mleMean = additionalElements(1)
         F.sqrt(
           F.sum(
             F.pow(
