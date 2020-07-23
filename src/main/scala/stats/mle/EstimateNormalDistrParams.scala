@@ -1,36 +1,47 @@
 package stats.mle
 
 import org.apache.spark.sql.{Column, DataFrame, functions => F}
-import stats.constants.{DistributionGeneralConstants, DistributionParamConstants}
+import stats.configs.BaseFittedDistrConfig
+import stats.constants.{DistributionConstants, DistributionParamConstants}
 
-object EstimateNormalDistrParams extends EstimateDistrParams {
-  override def estimate(df: DataFrame): String = {
+class EstimateNormalDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfig])
+    extends EstimateDistrParams(baseFittedDistrConfigs) {
+  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus = {
     val totalObservations = df.count()
 
     val mleMean =
-      computeMLE(df, getAggFunc(DistributionParamConstants.MEAN, Some(Seq(totalObservations))))
+      computeMLE(
+        df,
+        getAggFunc(
+          baseFittedDistrConfig.column,
+          DistributionParamConstants.MEAN,
+          Some(Seq(totalObservations))))
     val mleStdDev = computeMLE(
       df,
-      getAggFunc(DistributionParamConstants.STD_DEV, Some(Seq(totalObservations, mleMean))))
+      getAggFunc(
+        baseFittedDistrConfig.column,
+        DistributionParamConstants.STD_DEV,
+        Some(Seq(totalObservations, mleMean))))
 
-    buildMLEResultsMessage(Seq(mleMean, mleStdDev))
+    MLEStatus(
+      baseFittedDistrConfig.column,
+      DistributionConstants.NORMAL,
+      buildMLEResultsMessage(Seq(mleMean, mleStdDev)),
+      baseFittedDistrConfig.source.path)
   }
 
-  override def filterOutNonSupportedObservations(df: DataFrame): DataFrame = df
-
-  override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {
+  override def getAggFunc(
+    columnName: String,
+    param: String,
+    additionalElements: Option[Seq[Any]]): Column = {
     param match {
       case DistributionParamConstants.MEAN =>
         val totalObservations = additionalElements.get.head
-        F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN) / totalObservations
+        F.sum(columnName) / totalObservations
       case DistributionParamConstants.STD_DEV =>
         val totalObservations = additionalElements.get.head
         val mleMean = additionalElements.get(1)
-        F.sqrt(
-          F.sum(
-            F.pow(
-              F.col(DistributionGeneralConstants.MLE_TARGET_COLUMN) - F.lit(mleMean),
-              2)) / totalObservations)
+        F.sqrt(F.sum(F.pow(F.col(columnName) - F.lit(mleMean), 2)) / totalObservations)
     }
   }
 

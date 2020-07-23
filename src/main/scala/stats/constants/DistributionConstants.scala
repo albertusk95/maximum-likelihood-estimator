@@ -16,4 +16,7 @@ object DistributionParamConstants {
 
   // exponential
   val RATE = "rate"
+
+  // binomial
+  val SUCCESS_PROBA = "success_proba"
 }

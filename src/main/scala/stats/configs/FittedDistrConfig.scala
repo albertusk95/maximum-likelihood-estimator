@@ -1,0 +1,9 @@
+package stats.configs
+
+case class FittedNormalDistrConfig(column: String, source: SourceConfig)
+    extends BaseFittedDistrConfig
+
+case class FittedExpDistrConfig(column: String, source: SourceConfig) extends BaseFittedDistrConfig
+
+case class FittedBinomialDistrConfig(column: String, source: SourceConfig)
+    extends BaseFittedDistrConfig

@@ -1,10 +1,11 @@
 package stats
 
 import org.apache.spark.sql.SparkSession
-import stats.configs.{ConfigUtils, MLEConfigs}
-import stats.mle.{EstimateParams, MLEStatus}
-import stats.sources.SourceFactory
+import stats.configs.{BaseFittedDistrConfig, ConfigUtils, MLEConfig}
+import stats.mle.EstimateDistrParamsFactory
 
+import scala.reflect.runtime.currentMirror
+import scala.reflect.runtime.universe._
 import scala.util.Try
 
 object MLE {
@@ -19,33 +20,37 @@ object MLE {
       .zip(configs)
       .toStream
       .map {
-        case (_, config: MLEConfigs) =>
+        case (_, config: MLEConfig) =>
           processOne(config)
       }
       .toList
   }
 
-  private def processOne(config: MLEConfigs): Unit = {
-    config.maxLikelihoodEstimates match {
-      case Some(mles) =>
-        val mleStatuses: Seq[MLEStatus] = mles.map { distrMLEs =>
-          val df = SourceFactory.of(distrMLEs.source.format, distrMLEs.source.path).get.readData()
+  private def processOne(config: MLEConfig): Unit = {
+    val r = currentMirror.reflect(config.maxLikelihoodEstimates)
+    val maxLikelihoodEstimates = r.symbol.typeSignature.members.toStream
+      .collect { case s: TermSymbol if !s.isMethod => r.reflectField(s) }
+      .map(r => r.symbol.name.toString.trim -> r.get)
+      .map(x => x._2.asInstanceOf[Option[Seq[BaseFittedDistrConfig]]])
 
-          EstimateParams.estimate(
-            df.select(distrMLEs.column),
-            distrMLEs.column,
-            distrMLEs.fittedDistribution,
-            distrMLEs.source.path)
-        }
+    val allMaxLikelihoodEstimates = maxLikelihoodEstimates
+      .filter(_.isDefined)
+      .map { fittedDistrConfigs =>
+        fittedDistrConfigs
+          .asInstanceOf[Option[Seq[BaseFittedDistrConfig]]]
+          .flatMap(EstimateDistrParamsFactory.getConstraint)
+          .map(x => x.runEstimator())
+          .get
+      }
+      .toList
 
-        SparkSession.builder.getOrCreate
-          .createDataFrame(mleStatuses)
-          .show(truncate = false)
-      case None =>
-    }
+    SparkSession.builder
+      .getOrCreate()
+      .createDataFrame(allMaxLikelihoodEstimates.flatten)
+      .show(truncate = false)
   }
 
-  private def readConfig(file: String): Try[MLEConfigs] =
+  private def readConfig(file: String): Try[MLEConfig] =
     Try(ConfigUtils.loadConfig(file)).recover {
       case e => throw new Error(s"Error parsing file: $file", e)
     }
