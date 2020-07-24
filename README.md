@@ -140,7 +140,7 @@ MLE of the param =    dl     =  0
                     dparam
 ```
 
-The derivation uses log-likelihood since it's easier to calculate and the resulting MLE is the same with the one resulted from the original likelihood function.
+The derivation uses log-likelihood since besides it's easier to calculate, the resulting MLE is also the same with the one resulted from the original likelihood function.
 
 A quick mathematical proof.
 
@@ -151,7 +151,7 @@ L' =  dL  = d(p(x,y) . q(x,y) . r(x,y))
      ----   ---------------------------
       dx                dx
 
-To find the MLE for x, the task becomes to solving for L' = 0.
+To find the MLE for x, the task becomes solving for L' = 0.
 
 ===
 
@@ -165,7 +165,7 @@ dlog(L) = L' / (L ln(10))
 -------
   dx
   
-To find the MLE for x, the task becomes to solving for L' / (L ln(10)) = 0.
+To find the MLE for x, the task becomes solving for L' / (L ln(10)) = 0.
 
 It simply states that L' = 0 since the denominator can't be zero.
 ```
