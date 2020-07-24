@@ -7,3 +7,5 @@ case class FittedExpDistrConfig(column: String, source: SourceConfig) extends Ba
 
 case class FittedBinomialDistrConfig(column: String, source: SourceConfig, successEvent: String)
     extends BaseFittedDistrConfig
+
+case class FittedPoissonDistrConfig(column: String, source: String) extends BaseFittedDistrConfig
