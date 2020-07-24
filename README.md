@@ -64,6 +64,15 @@ Here's an example of the config file.
           "path": ""
         }
       }
+    ],
+    "poisson": [
+      {
+        "column": "",
+        "source": {
+          "format": "csv",
+          "path": ""
+        }
+      }
     ]
   }
 }
