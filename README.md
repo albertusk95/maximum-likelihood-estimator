@@ -1,6 +1,8 @@
 # Maximum Likelihood Estimation (EMELY)
 
-<b>EMELY</b> is a collection of maximum likelihood estimators for the fitted distribution parameters given a set of observations.
+Hi, I'm <b>EMELY</b> (that's how you'd spell MLE),
+
+A collection of maximum likelihood estimators for the fitted distribution parameters given a set of observations.
 
 ## Assumption
 
