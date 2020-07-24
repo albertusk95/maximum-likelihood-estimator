@@ -2,15 +2,11 @@ package stats.mle
 
 import org.apache.spark.sql.{Column, DataFrame, functions => F}
 import stats.configs.BaseFittedDistrConfig
-import stats.constants.{
-  DistributionConstants,
-  DistributionGeneralConstants,
-  DistributionParamConstants
-}
+import stats.constants.{DistributionGeneralConstants, DistributionParamConstants}
 
 class EstimateNormalDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfig])
     extends EstimateDistrParams(baseFittedDistrConfigs) {
-  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus = {
+  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): String = {
     val totalObservations = df.count()
 
     val mleMean =
@@ -19,11 +15,7 @@ class EstimateNormalDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfi
       df,
       getAggFunc(DistributionParamConstants.STD_DEV, Some(Seq(totalObservations, mleMean))))
 
-    MLEStatus(
-      baseFittedDistrConfig.column,
-      DistributionConstants.NORMAL,
-      buildMLEResultsMessage(Seq(mleMean, mleStdDev)),
-      baseFittedDistrConfig.source.path)
+    buildMLEResultsMessage(Seq(mleMean, mleStdDev))
   }
 
   override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {

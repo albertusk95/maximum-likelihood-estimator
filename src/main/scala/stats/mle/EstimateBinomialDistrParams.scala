@@ -2,15 +2,11 @@ package stats.mle
 
 import org.apache.spark.sql.{Column, DataFrame, functions => F}
 import stats.configs.{BaseFittedDistrConfig, FittedBinomialDistrConfig}
-import stats.constants.{
-  DistributionConstants,
-  DistributionGeneralConstants,
-  DistributionParamConstants
-}
+import stats.constants.{DistributionGeneralConstants, DistributionParamConstants}
 
 class EstimateBinomialDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfig])
     extends EstimateDistrParams(baseFittedDistrConfigs) {
-  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus = {
+  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): String = {
     val binomialDistrConfig = baseFittedDistrConfig.asInstanceOf[FittedBinomialDistrConfig]
     val totalObservations = df.count()
 
@@ -21,11 +17,7 @@ class EstimateBinomialDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCon
           DistributionParamConstants.SUCCESS_PROBA,
           Some(Seq(totalObservations, binomialDistrConfig.successEvent))))
 
-    MLEStatus(
-      baseFittedDistrConfig.column,
-      DistributionConstants.BINOMIAL,
-      buildMLEResultsMessage(Seq(mleSuccessProba)),
-      baseFittedDistrConfig.source.path)
+    buildMLEResultsMessage(Seq(mleSuccessProba))
   }
 
   override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {

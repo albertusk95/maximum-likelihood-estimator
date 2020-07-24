@@ -8,15 +8,15 @@ import stats.sources.SourceFactory
 case class MLEStatus(
   columnName: String,
   fittedDistribution: String,
-  paramMLEs: String,
+  var paramMLEs: String,
   sourcePath: String)
 
 abstract class EstimateDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfig]) {
   def runEstimator(): List[MLEStatus] = {
-    var allDistrMLEs: List[MLEStatus] = List()
+    var allMLEStatuses: List[MLEStatus] = List()
     for (baseFittedDistrConfig <- baseFittedDistrConfigs) {
       val df = SourceFactory.of(baseFittedDistrConfig.source).get.readData()
-      var distrMLEs = MLEStatus(
+      val mleStatus = MLEStatus(
         baseFittedDistrConfig.column,
         MLEUtils.getFittedDistribution(baseFittedDistrConfig),
         "[INVALID PRE CONDITIONS]",
@@ -29,15 +29,15 @@ abstract class EstimateDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCo
           DistributionGeneralConstants.MLE_TARGET_COLUMN)
         val supportedObservations = filterOutNonSupportedObservations(standardizedColNameDf)
 
-        distrMLEs = estimate(
+        mleStatus.paramMLEs = estimate(
           supportedObservations.select(DistributionGeneralConstants.MLE_TARGET_COLUMN),
           baseFittedDistrConfig)
       }
 
-      allDistrMLEs = distrMLEs :: allDistrMLEs
+      allMLEStatuses = mleStatus :: allMLEStatuses
     }
 
-    allDistrMLEs
+    allMLEStatuses
   }
 
   def computeMLE(df: DataFrame, aggFunc: Column): Double =
@@ -45,7 +45,7 @@ abstract class EstimateDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCo
 
   def filterOutNonSupportedObservations(df: DataFrame): DataFrame = df
 
-  def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus
+  def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): String
 
   def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column
 

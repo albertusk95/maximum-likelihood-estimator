@@ -2,25 +2,17 @@ package stats.mle
 
 import org.apache.spark.sql.{Column, DataFrame, functions => F}
 import stats.configs.BaseFittedDistrConfig
-import stats.constants.{
-  DistributionConstants,
-  DistributionGeneralConstants,
-  DistributionParamConstants
-}
+import stats.constants.{DistributionGeneralConstants, DistributionParamConstants}
 
 class EstimateExpDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfig])
     extends EstimateDistrParams(baseFittedDistrConfigs) {
-  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus = {
+  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): String = {
     val totalObservations = df.count()
 
     val mleRate =
       computeMLE(df, getAggFunc(DistributionParamConstants.RATE, Some(Seq(totalObservations))))
 
-    MLEStatus(
-      baseFittedDistrConfig.column,
-      DistributionConstants.EXP,
-      buildMLEResultsMessage(Seq(mleRate)),
-      baseFittedDistrConfig.source.path)
+    buildMLEResultsMessage(Seq(mleRate))
   }
 
   override def filterOutNonSupportedObservations(df: DataFrame): DataFrame =
