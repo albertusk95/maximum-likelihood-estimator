@@ -81,6 +81,7 @@ Currently supports:
 * normal distribution: `normal`
 * exponential distribution: `exp`
 * binomial distribution: `binomial`
+* poisson distribution: `poisson`
 
 ### column
 
