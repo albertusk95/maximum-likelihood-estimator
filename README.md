@@ -34,24 +34,36 @@ Here's an example of the config file.
 
 ```
 {
-  "max_likelihood_estimates": [
-    {
-      "fitted_distribution": "normal",
-      "column": "",
-      "source": {
-        "format": "csv",
-        "path": ""
+  "max_likelihood_estimates": {
+    "normal": [
+      {
+        "column": "",
+        "source": {
+          "format": "csv",
+          "path": ""
+        }
       }
-    },
-    {
-      "fitted_distribution": "exp",
-      "column": "",
-      "source": {
-        "format": "csv",
-        "path": ""
+    ],
+    "exp": [
+      {
+        "column": "",
+        "source": {
+          "format": "csv",
+          "path": ""
+        }
       }
-    }
-  ]
+    ],
+    "binomial": [
+      {
+        "column": "",
+        "success_event": "",
+        "source": {
+          "format": "csv",
+          "path": ""
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -66,14 +78,21 @@ The distribution whose parameters' MLE will be calculated by fitting it to the o
 Currently supports:
 * normal distribution: `normal`
 * exponential distribution: `exp`
+* binomial distribution: `binomial`
 
 ### column
 
-The column name that provides a set of observations
+The column name that provides a set of observations.
+
+### success_event
+
+For binomial distribution.
+
+It denotes the observation whose probability will be calculated.
 
 ### source
 
-The information of the source data
+The information of the source data:
 * `format`: supported file formats are `csv` and `parquet`
 * `path`: path to the source data
 
