@@ -9,4 +9,7 @@ object MLEUtils {
 
   def numericInputCol(df: DataFrame, columnName: String): Boolean =
     df.schema(columnName).dataType != StringType
+
+  def standardizeColName(df: DataFrame, columnName: String, newColumnName: String): DataFrame =
+    df.withColumnRenamed(columnName, newColumnName)
 }

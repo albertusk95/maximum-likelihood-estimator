@@ -2,6 +2,7 @@ package stats.mle
 
 import org.apache.spark.sql.{Column, DataFrame}
 import stats.configs.BaseFittedDistrConfig
+import stats.constants.DistributionGeneralConstants
 import stats.sources.SourceFactory
 
 case class MLEStatus(
@@ -15,10 +16,17 @@ abstract class EstimateDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCo
     var allDistrMLEs: List[MLEStatus] = List()
     for (baseFittedDistrConfig <- baseFittedDistrConfigs) {
       val df = SourceFactory.of(baseFittedDistrConfig.source).get.readData()
-      val supportedObservations =
-        filterOutNonSupportedObservations(df, baseFittedDistrConfig.column)
+      val standardizedColNameDf = MLEUtils.standardizeColName(
+        df,
+        baseFittedDistrConfig.column,
+        DistributionGeneralConstants.MLE_TARGET_COLUMN)
+      val supportedObservations = filterOutNonSupportedObservations(standardizedColNameDf)
 
-      val distrMLEs = estimate(supportedObservations, baseFittedDistrConfig)
+      val distrMLEs =
+        estimate(
+          supportedObservations.select(DistributionGeneralConstants.MLE_TARGET_COLUMN),
+          baseFittedDistrConfig)
+
       allDistrMLEs = distrMLEs :: allDistrMLEs
     }
 
@@ -28,11 +36,11 @@ abstract class EstimateDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCo
   def computeMLE(df: DataFrame, aggFunc: Column): Double =
     df.agg(aggFunc).head.get(0).asInstanceOf[Double]
 
-  def filterOutNonSupportedObservations(df: DataFrame, columnName: String): DataFrame = df
+  def filterOutNonSupportedObservations(df: DataFrame): DataFrame = df
 
   def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus
 
-  def getAggFunc(columnName: String, param: String, additionalElements: Option[Seq[Any]]): Column
+  def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column
 
   def buildMLEResultsMessage(paramMLEs: Seq[Double]): String
 }
