@@ -3,6 +3,7 @@ package stats.constants
 object DistributionConstants {
   val NORMAL = "normal"
   val EXP = "exp"
+  val BINOMIAL = "binomial"
 }
 
 object DistributionGeneralConstants {

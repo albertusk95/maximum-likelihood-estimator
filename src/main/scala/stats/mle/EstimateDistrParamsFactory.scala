@@ -1,9 +1,14 @@
 package stats.mle
 
-import stats.configs.{BaseFittedDistrConfig, FittedExpDistrConfig, FittedNormalDistrConfig}
+import stats.configs.{
+  BaseFittedDistrConfig,
+  FittedBinomialDistrConfig,
+  FittedExpDistrConfig,
+  FittedNormalDistrConfig
+}
 
 object EstimateDistrParamsFactory {
-  def getConstraint(
+  def getEstimateDistrParams(
     baseFittedDistrConfigs: Seq[BaseFittedDistrConfig]
   ): Option[EstimateDistrParams] = {
     baseFittedDistrConfigs.head match {
@@ -11,6 +16,8 @@ object EstimateDistrParamsFactory {
         Some(new EstimateNormalDistrParams(baseFittedDistrConfigs))
       case _: FittedExpDistrConfig =>
         Some(new EstimateExpDistrParams(baseFittedDistrConfigs))
+      case _: FittedBinomialDistrConfig =>
+        Some(new EstimateBinomialDistrParams(baseFittedDistrConfigs))
       case _ =>
         None
     }

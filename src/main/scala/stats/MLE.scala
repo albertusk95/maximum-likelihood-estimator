@@ -38,7 +38,7 @@ object MLE {
       .map { fittedDistrConfigs =>
         fittedDistrConfigs
           .asInstanceOf[Option[Seq[BaseFittedDistrConfig]]]
-          .flatMap(EstimateDistrParamsFactory.getConstraint)
+          .flatMap(EstimateDistrParamsFactory.getEstimateDistrParams)
           .map(x => x.runEstimator())
           .get
       }

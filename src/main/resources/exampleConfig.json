@@ -2,7 +2,7 @@
   "max_likelihood_estimates": {
     "normal": [
       {
-        "column": "",
+        "column": "target",
         "source": {
           "format": "csv",
           "path": ""
@@ -11,7 +11,17 @@
     ],
     "exp": [
       {
-        "column": "",
+        "column": "target",
+        "source": {
+          "format": "csv",
+          "path": ""
+        }
+      }
+    ],
+    "binomial": [
+      {
+        "column": "target",
+        "success_event": "b",
         "source": {
           "format": "csv",
           "path": ""

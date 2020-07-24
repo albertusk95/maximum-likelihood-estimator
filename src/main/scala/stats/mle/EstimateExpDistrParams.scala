@@ -2,39 +2,27 @@ package stats.mle
 
 import org.apache.spark.sql.{Column, DataFrame, functions => F}
 import stats.configs.BaseFittedDistrConfig
-import stats.constants.{DistributionConstants, DistributionParamConstants}
+import stats.constants.{DistributionGeneralConstants, DistributionParamConstants}
 
 class EstimateExpDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConfig])
     extends EstimateDistrParams(baseFittedDistrConfigs) {
-  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): MLEStatus = {
+  override def estimate(df: DataFrame, baseFittedDistrConfig: BaseFittedDistrConfig): String = {
     val totalObservations = df.count()
 
     val mleRate =
-      computeMLE(
-        df,
-        getAggFunc(
-          baseFittedDistrConfig.column,
-          DistributionParamConstants.RATE,
-          Some(Seq(totalObservations))))
+      computeMLE(df, getAggFunc(DistributionParamConstants.RATE, Some(Seq(totalObservations))))
 
-    MLEStatus(
-      baseFittedDistrConfig.column,
-      DistributionConstants.EXP,
-      buildMLEResultsMessage(Seq(mleRate)),
-      baseFittedDistrConfig.source.path)
+    buildMLEResultsMessage(Seq(mleRate))
   }
 
-  override def filterOutNonSupportedObservations(df: DataFrame, columnName: String): DataFrame =
-    df.filter(F.col(columnName) >= F.lit(0))
+  override def filterOutNonSupportedObservations(df: DataFrame): DataFrame =
+    df.filter(F.col(DistributionGeneralConstants.MLE_TARGET_COLUMN) >= F.lit(0))
 
-  override def getAggFunc(
-    columnName: String,
-    param: String,
-    additionalElements: Option[Seq[Any]]): Column = {
+  override def getAggFunc(param: String, additionalElements: Option[Seq[Any]]): Column = {
     param match {
       case DistributionParamConstants.RATE =>
         val totalObservations = additionalElements.get.head
-        F.lit(totalObservations) / F.sum(columnName)
+        F.lit(totalObservations) / F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN)
     }
   }
 
