@@ -1,12 +1,13 @@
 package stats.mle
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.types.StringType
+import org.apache.spark.sql.types.{IntegerType, StringType}
 import stats.configs.{
   BaseFittedDistrConfig,
   FittedBinomialDistrConfig,
   FittedExpDistrConfig,
-  FittedNormalDistrConfig
+  FittedNormalDistrConfig,
+  FittedPoissonDistrConfig
 }
 import stats.constants.DistributionConstants
 
@@ -19,6 +20,10 @@ object MLEUtils {
         hasInputCol(df, fittedDistrConfig.column) && numericInputCol(df, fittedDistrConfig.column)
       case _: FittedBinomialDistrConfig =>
         hasInputCol(df, fittedDistrConfig.column)
+      case _: FittedPoissonDistrConfig =>
+        hasInputCol(df, fittedDistrConfig.column) && numericIntegerInputCol(
+          df,
+          fittedDistrConfig.column)
     }
   }
 
@@ -27,6 +32,7 @@ object MLEUtils {
       case _: FittedNormalDistrConfig   => DistributionConstants.NORMAL
       case _: FittedExpDistrConfig      => DistributionConstants.EXP
       case _: FittedBinomialDistrConfig => DistributionConstants.BINOMIAL
+      case _: FittedPoissonDistrConfig  => DistributionConstants.POISSON
     }
   }
 
@@ -35,6 +41,9 @@ object MLEUtils {
 
   def numericInputCol(df: DataFrame, columnName: String): Boolean =
     df.schema(columnName).dataType != StringType
+
+  def numericIntegerInputCol(df: DataFrame, columnName: String): Boolean =
+    df.schema(columnName).dataType == IntegerType
 
   def standardizeColName(df: DataFrame, columnName: String, newColumnName: String): DataFrame =
     df.withColumnRenamed(columnName, newColumnName)

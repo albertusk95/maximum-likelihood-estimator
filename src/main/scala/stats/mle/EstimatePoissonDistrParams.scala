@@ -22,7 +22,7 @@ class EstimatePoissonDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrConf
     param match {
       case DistributionParamConstants.RATE =>
         val totalObservations = additionalElements.get.head
-        F.lit(totalObservations) / F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN)
+        F.sum(DistributionGeneralConstants.MLE_TARGET_COLUMN) / F.lit(totalObservations)
     }
   }
 

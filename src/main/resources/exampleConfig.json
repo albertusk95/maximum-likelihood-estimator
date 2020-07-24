@@ -27,6 +27,15 @@
           "path": ""
         }
       }
+    ],
+    "poisson": [
+      {
+        "column": "",
+        "source": {
+          "format": "csv",
+          "path": ""
+        }
+      }
     ]
   }
 }
