@@ -16,16 +16,23 @@ abstract class EstimateDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCo
     var allDistrMLEs: List[MLEStatus] = List()
     for (baseFittedDistrConfig <- baseFittedDistrConfigs) {
       val df = SourceFactory.of(baseFittedDistrConfig.source).get.readData()
-      val standardizedColNameDf = MLEUtils.standardizeColName(
-        df,
+      var distrMLEs = MLEStatus(
         baseFittedDistrConfig.column,
-        DistributionGeneralConstants.MLE_TARGET_COLUMN)
-      val supportedObservations = filterOutNonSupportedObservations(standardizedColNameDf)
+        MLEUtils.getFittedDistribution(baseFittedDistrConfig),
+        "[INVALID PRE CONDITIONS]",
+        baseFittedDistrConfig.source.path)
 
-      val distrMLEs =
-        estimate(
+      if (MLEUtils.validPreConditions(df, baseFittedDistrConfig)) {
+        val standardizedColNameDf = MLEUtils.standardizeColName(
+          df,
+          baseFittedDistrConfig.column,
+          DistributionGeneralConstants.MLE_TARGET_COLUMN)
+        val supportedObservations = filterOutNonSupportedObservations(standardizedColNameDf)
+
+        distrMLEs = estimate(
           supportedObservations.select(DistributionGeneralConstants.MLE_TARGET_COLUMN),
           baseFittedDistrConfig)
+      }
 
       allDistrMLEs = distrMLEs :: allDistrMLEs
     }
