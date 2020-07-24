@@ -41,6 +41,6 @@ class EstimateBinomialDistrParams(baseFittedDistrConfigs: Seq[BaseFittedDistrCon
   override def buildMLEResultsMessage(paramMLEs: Seq[Double]): String = {
     val mleSuccessProba = paramMLEs.head
 
-    s"success_probability: ${mleSuccessProba}"
+    s"successProba: ${mleSuccessProba}"
   }
 }

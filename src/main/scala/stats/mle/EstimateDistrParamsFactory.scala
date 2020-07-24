@@ -4,7 +4,8 @@ import stats.configs.{
   BaseFittedDistrConfig,
   FittedBinomialDistrConfig,
   FittedExpDistrConfig,
-  FittedNormalDistrConfig
+  FittedNormalDistrConfig,
+  FittedPoissonDistrConfig
 }
 
 object EstimateDistrParamsFactory {
@@ -18,6 +19,8 @@ object EstimateDistrParamsFactory {
         Some(new EstimateExpDistrParams(baseFittedDistrConfigs))
       case _: FittedBinomialDistrConfig =>
         Some(new EstimateBinomialDistrParams(baseFittedDistrConfigs))
+      case _: FittedPoissonDistrConfig =>
+        Some(new EstimatePoissonDistrParams(baseFittedDistrConfigs))
       case _ =>
         None
     }

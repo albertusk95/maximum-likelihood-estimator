@@ -4,6 +4,7 @@ object DistributionConstants {
   val NORMAL = "normal"
   val EXP = "exp"
   val BINOMIAL = "binomial"
+  val POISSON = "poisson"
 }
 
 object DistributionGeneralConstants {
@@ -15,7 +16,7 @@ object DistributionParamConstants {
   val MEAN = "mean"
   val STD_DEV = "std_dev"
 
-  // exponential
+  // exponential, poisson
   val RATE = "rate"
 
   // binomial
